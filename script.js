@@ -20,7 +20,11 @@ document.addEventListener('DOMContentLoaded', () => {
     // Fator de correção para evitar problemas de ponto flutuante
     const DECIMAL_FACTOR = 100000; 
     
+    // Variável global para armazenar os preços das peças selecionadas
+    let buildPrices = {}; 
+    
     // --- DADOS BASE ---
+    // (Omitido por ser muito grande, mas o restante do seu objeto PRECOS_BASE_RAW deve ser mantido aqui)
     const PRECOS_BASE_RAW = {
         "Classe A": {
         "Cabeçote": {
@@ -504,7 +508,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 "ProRacing SC Kompressor HP": 144250.2377316122
             },
             "polias": {
-                "TakaShing 3.9": 17813.3846436893,
+                "TakaShing 3.9": 17813.3846436894,
                 "Magnuson 3.6": 26720.076965534,
                 "Magnuson 3.2": 39190.0381093721,
                 "Edelbrock 3.0": 49876.8851090745,
@@ -566,337 +570,355 @@ document.addEventListener('DOMContentLoaded', () => {
                 "Z-Pro Carbon": 19085.9806546759
             }
         }
-        },
-        "Classe C": {
+    },
+    "Classe C": { 
         "Cabeçote": {
-                "cabeçote": {
-                    "TakaShing": 13312.1050311076,
-                    "OEM": 15975.4936616592,
-                    "ProRacing Header S1": 27954.6948470785,
-                    "ProRacing Header S2": 39936.3150984426,
-                    "Edelbrock E-Street Header": 59905.6821703968,
-                    "Edelbrock Victor Header": 79872.6301866458,
-                    "TrickFlow PowerPort": 103833.4516183095,
-                    "TrickFlow GenX": 133121.0503110763,
-                    "ProRacing Header S3": 178381.7236046772,
-                    "ProRacing Header S4": 223642.3968982782,
-                    "Edelbrock Masterflow Header": 258919.5961837547
-                },
-                "coletor de admissão": {
-                    "TakaShing Polido": 9318.2316156928,
-                    "TakaShing Plenum": 13510.4682184247,
-                    "Folego Turbo Individual": 19567.80258079,
-                    "Folego Turbo Variável": 33080.6898600395,
-                    "ProRacing Variável": 40814.4350533806,
-                    "Mann-Hummel GF50": 53112.9525646404,
-                    "TrickFlow StreetBurner": 63829.4027706901,
-                    "TrickFlow TrackHeat Variável": 83864.0845412356,
-                    "Edelbrock Perfomer Variável": 119088.0644373655,
-                    "Edelbrock Flathead Variável": 148905.4379627737
-                },
-                "coletor de escape": {
-                    "TakaShing Polido": 7653.9161042013,
-                    "Bellows Manel": 17068.9102501677,
-                    "Bellows Hastelloy": 28319.9734002695,
-                    "BBK Titanium Variável": 38192.1704978114,
-                    "ProRacing Cerâmico": 41177.2945406268,
-                    "ProRacing H-Cerâmico": 45923.4966252076,
-                    "ProRacing Y-Variável": 59700.0617954852,
-                    "FMIC Vanos": 77458.4050770527,
-                    "FMIC R6": 110217.3595350677
-                },
-                "comandos": {
-                    "Comando OEM": 9983.4740081246,
-                    "Comando 260": 14974.0014817742,
-                    "Comando 264": 19966.9480162489,
-                    "Comando 268": 24959.8945507237,
-                    "Comando 272": 29950.4220243735,
-                    "Comando 280": 34940.9494980231,
-                    "Comando 288": 39933.8960324979,
-                    "Comando 292": 44926.8425669727,
-                    "Comando 304": 49917.3700406224,
-                    "Comando 312": 54907.8974886736,
-                    "Comando 320": 59900.8440487468
-                },
-                "juntas": {
-                    "TakaShing Aluminium": 2080.3943901324,
-                    "SPA Aço": 2559.3689121712,
-                    "BBK Aço": 3536.6704628156,
-                    "ProRacing Carbon": 4139.0172103133,
-                    "Edelbrock Racing Series": 5721.0845697924,
-                    "Edelbrock Carbon": 7281.3803634156
-                },
-                "molas": {
-                    "TakaShing SPR1": 3660.0426882745,
-                    "OEM Aço": 6294.40255872,
-                    "Edelbrock Magnum": 8125.6334360856,
-                    "ProRacing Carbon": 11163.9768733674,
-                    "ProRacing M1": 15298.1559548632
-                },
-                "tuchos": {
-                    "TakaShing TPT1": 5075.1946859752,
-                    "OEM Aço": 7866.7936718273,
-                    "Edelbrock Flat": 9997.9883884335,
-                    "Edelbrock Performer": 12789.5873707017,
-                    "Crower 350T": 16139.9899667083,
-                    "Edelbrock M-Tec": 16241.5906186318,
-                    "ProRacing OBB": 20148.3777573122,
-                    "ProRacing OBB+": 26087.1780215004
-                },
-                "válvulas": {
-                    "TakaShing Aço": 14144.2627894133,
-                    "Bosch Aço": 26873.3735780539,
-                    "Eaton Aço": 40311.2699000532,
-                    "Continental Aço": 53606.4414849071,
-                    "ProRacing Carbon": 73266.1684692011,
-                    "ProRacing Tungstênio": 96181.9546005318
-                }
+            "cabeçote": {
+                "TakaShing": 13312.1050311076,
+                "OEM": 15974.5260373291,
+                "ProRacing Header S1": 27950.4172545899,
+                "ProRacing Header S2": 39928.6946497798,
+                "Edelbrock E-Street Header": 59892.4414634282,
+                "Edelbrock Victor Header": 79854.743125237,
+                "TrickFlow PowerPort": 103810.0380628087,
+                "TrickFlow GenX": 133121.050311076,
+                "ProRacing Header S3": 178491.1394676508,
+                "ProRacing Header S4": 223861.2286242257,
+                "Edelbrock Masterflow Header": 259021.5794848074
             },
-            "ECU": {
-                "chip": {
-                    "Remapeamento ECU": 12479.9472779217,
-                    "Chip TakaShing": 39936.3150984426,
-                    "Chip NascarParts": 49544.8342998367,
-                    "Chip MNS GT2": 64146.3000459451,
-                    "Chip Folego Turbo": 81742.5660986476,
-                    "Chip ProRacing GT-R": 89606.9406738119
-                },
-                "módulo de injeção": {
-                    "ProCrane 3": 37437.4227627007,
-                    "ProCrane+": 56156.1341542905,
-                    "ProRacing Ftech+": 112312.268308581,
-                    "ProRacing Ftech+ V2": 187187.1138135035,
-                    "ProRacing Ftech+ V300": 299499.3821220843,
-                    "ProRacing Ftech+ V450": 374374.2276270068
-                }
+            "coletor de admissão": {
+                "TakaShing Polido": 9325.2694116499,
+                "TakaShing Plenum": 13511.4550868735,
+                "Folego Turbo Individual": 19602.8126848206,
+                "Folego Turbo Variável": 33100.9575916056,
+                "ProRacing Variável": 40798.508569557,
+                "Mann-Hummel GF80": 53086.993439999,
+                "TrickFlow StreetBurner": 63704.3813959988,
+                "TrickFlow TrackHeat Variável": 83907.7282869984,
+                "Edelbrock Perfomer Variável": 119213.9213876618,
+                "Edelbrock Flathead Variável": 149023.7018314545
             },
-            "Motor": {
-                "bielas": {
-                    "OEM": 17470.4747464518,
-                    "TakaShing Forjado": 33020.2132830983,
-                    "OEM Forjado": 48567.5327486805,
-                    "ProRacing Steel+": 61495.0067195184,
-                    "ProRacing Carbon+": 71628.4626523829
-                },
-                "bloco": {
-                    "OEM": 58236.5285116567,
-                    "ProRacing Aluminium": 128120.8466197251,
-                    "TAPerformance V3800": 221298.3246038066,
-                    "TAPerformance V4550": 262064.3784304481,
-                    "Edelbrock 350 SBC": 349419.1712235317,
-                    "Brodix BS Aluminium": 472297.9077622252
-                },
-                "bomba de óleo": {
-                    "OEM": 5324.3582002781,
-                    "TakaShing P1": 11713.1042284467,
-                    "Melling M295": 20233.0449732216,
-                    "Melling M295HV": 21829.6267150575,
-                    "Edelbrock Performer": 27686.1788292809
-                },
-                "bronzinas": {
-                    "OEM": 7487.0007383272,
-                    "TakaShing": 16471.4016273918,
-                    "Mahie": 28450.6028128111,
-                    "Takao": 31445.4031091661,
-                    "King Aluminium": 34440.2034055209,
-                    "King Cobre": 38182.494244272,
-                    "King pMaxKote": 43424.6042945855
-                },
-                "cárter": {
-                    "TakaShing": 6572.5948351767,
-                    "OEM Aço": 10186.6753222112,
-                    "Edelbrock Aluminium": 12946.8264830363,
-                    "ProRacing Carbon": 16563.3260308957,
-                    "Edelbrock DOPS": 21031.3358441396,
-                    "ProRacing Dry+": 26092.01614827
-                },
-                "pistões": {
-                    "OEM": 30784.998843504,
-                    "TakaShing Forjado": 44638.9740420963,
-                    "OEM Forjado": 70189.1200280013,
-                    "ProRacing Steel+": 96048.9061015666,
-                    "ProRacing Titanium": 161005.5923430333
-                },
-                "virabrequim": {
-                    "OEM": 27456.3678205209,
-                    "TakaShing Forjado": 39812.9428683758,
-                    "OEM Forjado": 62600.5186428702,
-                    "ProRacing Steel+": 85663.8675869188,
-                    "ProRacing Titanium": 143598.0132394676
-                }
+            "coletor de escape": {
+                "TakaShing Polido": 7659.7397086884,
+                "Bellows Manel": 17076.6577827555,
+                "Bellows Hastelloy": 28358.5522501509,
+                "BBK Titanium Variável": 38221.4395898822,
+                "ProRacing Cerâmico": 41203.9686016768,
+                "ProRacing H-Cerâmico": 45946.0125816913,
+                "ProRacing Y-Variável": 59795.6888463182,
+                "FMIC Vanos": 77626.8368940801,
+                "FMIC R6": 110543.606708658
             },
-            "Óxido Nitroso": {
-                "kit instalação": {
-                    "Kit Nitro": 17472.8938123964
-                },
-                "bico injetor": {
-                    "TakaShing 0.3mm": 13466.122046494865,
-                    "TakaShing 0.5mm": 43125.48080402727,
-                    "NX 0.5mm": 64558.25333416874,
-                    "NX 0.6mm": 81093.66003377474,
-                    "NOS 0.7mm": 94302.04974305542,
-                    "NOS 0.8mm": 105070.29212498085,
-                    "NOS 2.0mm EC": 114520.28296201445
-                },
-                "garrafas": {
-                    "TakaShing 10 Lbs": 15808.5783009048,
-                    "TakaShing 20 Lbs": 23711.657915825,
-                    "NX 20 Lbs": 26875.7926388789,
-                    "NX Dual 40 Lbs": 31617.1566018096,
-                    "NOS 20 Lbs": 56753.6427924255,
-                    "NOS 30 Lbs": 78885.6523973093,
-                    "NOS Dual 40 Lbs": 91689.7541432002,
-                    "NOS Dual 60 LBs": 102756.9684760545
-                }
+            "comandos": {
+                "Comando OEM": 9997.9883884335,
+                "Comando 260": 14996.9825826503,
+                "Comando 264": 19997.0850259995,
+                "Comando 268": 24997.1874693488,
+                "Comando 272": 29995.1726053744,
+                "Comando 280": 34993.1577413999,
+                "Comando 288": 39993.2601847491,
+                "Comando 292": 44993.3626280983,
+                "Comando 304": 49991.3477641239,
+                "Comando 312": 54989.3328884102,
+                "Comando 320": 59989.4353414986
             },
-            "Redução de Peso": {
-                "reduções": {
-                    "ProReduction Light Pack": 33281.4721133013,
-                    "ProReduction Super Pack": 66562.9442163632,
-                    "ProReduction Ultra Pack": 99844.4163245447,
-                    "ProReduction Extreme Pack": 149766.624486817,
-                    "ProReduction Nismo Pack": 199688.8326490895,
-                    "ProReduction Apex Pack": 249611.0408113617
-                }
+            "juntas": {
+                "TakaShing Aluminium": 2080.3756470075,
+                "SPA Aço": 2559.8396328325,
+                "BBK Aço": 3538.2709210098,
+                "ProRacing Carbon": 4141.2005072007,
+                "Edelbrock Racing Series": 5720.0838385002,
+                "Edelbrock Carbon": 7280.9839441113
             },
-            "SuperCharger": {
-                "kit instalação": {
-                    "Kit Supercharger": 14560.3416660063
-                },
-                "remover tudo": {
-                    "Remover Supercharger": 3640.6901822198
-                },
-                "compressor": {
-                    "TakaShing Blower": 32616.2297208696,
-                    "Vortech Blower": 71756.673029698,
-                    "Edelbrock Blower": 120679.808047312,
-                    "Vortech CCSq V-30": 113504.8664728291,
-                    "Vortech Sc 2200x": 185912.2674788117,
-                    "ProRacing Sc Kompressor": 220158.9458289051,
-                    "ProRacing SC Kompressor HP": 235815.1231544843
-                },
-                "polias": {
-                    "TakaShing 3.9": 29120.6833320124,
-                    "Magnuson 3.6": 43681.0249980187,
-                    "Magnuson 3.2": 64066.4709363265,
-                    "Edelbrock 3.0": 81536.9457237359,
-                    "Edelbrock 2.6": 96097.2873692634,
-                    "ProRacing 2.2": 116482.7333178104,
-                    "ProRacing 2.1": 139778.3123570426,
-                    "ProRacing 2.0": 154338.6540537671
-                }
+            "molas": {
+                "TakaShing SPR1": 3662.6713915152,
+                "OEM Aço": 6297.8091170799,
+                "Edelbrock Magnum": 8133.003180709,
+                "ProRacing Carbon": 11186.2081607593,
+                "ProRacing M1": 15339.5298495034
             },
-            "Turbo": {
-                "kit instalação": {
-                    "Kit Turbo": 18138.1362048281
-                },
-                "remover tudo": {
-                    "Remover Turbo": 4533.3245195146
-                },
-                "intercooler": {
-                    "TakaShing": 27623.2831812752,
-                    "ProRacing I-Flow": 44196.2854708301,
-                    "HKS S-Type": 62152.9919294751,
-                    "HKS R-Type": 105521.9577636494,
-                    "Garret F80": 137840.6426907443,
-                    "Mashimoto TMIC": 166291.2455189145,
-                    "Mashimoto R-Line": 199715.4423693612,
-                    "ProRacing Competition": 233139.6392198079
-                },
-                "Turbinas": {
-                    "TakaShing .36": 52583.1777319988,
-                    "SPA .42": 75719.098603191,
-                    "SPA .48": 111475.2723927873,
-                    "Garret .58": 169844.8494034093,
-                    "Garret .63": 219798.5054076034,
-                    "HKS .70": 269224.805639981,
-                    "HKS .82": 326014.7343447814,
-                    "MasterPower .70": 381227.4338045849,
-                    "MasterPower .82": 431708.4455805956,
-                    "MasterPower .84": 488498.3743365929
-                },
-                "válvula de alívio": {
-                    "TakaShing": 7905.498680865,
-                    "Beep Turbo USC": 11858.2480212973,
-                    "SPA MCSI": 15810.9973617298,
-                    "HKS ControFlow": 19763.7467021623,
-                    "HKS GT II": 32413.028406783,
-                    "ProRacing WGV": 45062.3101114037
-                },
-                "válvula de prioridade": {
-                    "TakaShing": 9567.3951315315,
-                    "Beep Turbo USC": 14349.8831643249,
-                    "SPA MCSI": 19134.7902579433,
-                    "HKS ControFlow": 23919.6973566814,
-                    "HKS GT II": 39225.110504259,
-                    "ProRacing BOV": 54535.3617632471
-                }
+            "tuchos": {
+                "TakaShing TPT1": 5074.8021074718,
+                "OEM Aço": 7878.6143924376,
+                "Edelbrock Flat": 9997.9883884335,
+                "Edelbrock Performer": 12789.5873707017,
+                "Crower 350T": 16139.9899667083,
+                "Edelbrock M-Tec": 16241.5906186318,
+                "ProRacing OBB": 20148.3777573122,
+                "ProRacing OBB+": 26087.1780215004
             },
-            "Transmissão": {
-                "caixa de marchas": {
-                    "Z-Pro One": 24959.8945507237,
-                    "Z-Pro Carbon": 31201.077720097
-                }
+            "válvulas": {
+                "TakaShing Aço": 14144.2627894133,
+                "Bosch Aço": 26873.3735780539,
+                "Eaton Aço": 40311.2699000532,
+                "Continental Aço": 53606.4414849071,
+                "ProRacing Carbon": 73266.1684692011,
+                "ProRacing Tungstênio": 96181.9546005318
+            }
+        },
+        "ECU": {
+            "chip": {
+                "Remapeamento ECU": 12479.9472779217,
+                "Chip TakaShing": 39936.3150984426,
+                "Chip NascarParts": 49544.8342998367,
+                "Chip MNS GT2": 64146.3000459451,
+                "Chip Folego Turbo": 81742.5660986476,
+                "Chip ProRacing GT-R": 89606.9406738119
+            },
+            "módulo de injeção": {
+                "ProCrane 3": 37437.4227627007,
+                "ProCrane+": 56156.1341542905,
+                "ProRacing Ftech+": 112312.268308581,
+                "ProRacing Ftech+ V2": 187187.1138135035,
+                "ProRacing Ftech+ V300": 299499.3821220843,
+                "ProRacing Ftech+ V450": 374374.2276270068
+            }
+        },
+        "Motor": {
+            "bielas": {
+                "OEM": 17470.4747464518,
+                "TakaShing Forjado": 33020.2132830983,
+                "OEM Forjado": 48567.5327486805,
+                "ProRacing Steel+": 61495.0067195184,
+                "ProRacing Carbon+": 71628.4626523829
+            },
+            "bloco": {
+                "OEM": 58236.5285116567,
+                "ProRacing Aluminium": 128120.8466197251,
+                "TAPerformance V3800": 221298.3246038066,
+                "TAPerformance V4550": 262064.3784304481,
+                "Edelbrock 350 SBC": 349419.1712235317,
+                "Brodix BS Aluminium": 472297.9077622252
+            },
+            "bomba de óleo": {
+                "OEM": 5324.3582002781,
+                "TakaShing P1": 11713.1042284467,
+                "Melling M295": 20233.0449732216,
+                "Melling M295HV": 21829.6267150575,
+                "Edelbrock Performer": 27686.1788292857
+            },
+            "bronzinas": {
+                "OEM": 7490.1062095932,
+                "TakaShing": 16474.3912187659,
+                "Mahie": 28448.9723023246,
+                "Takao": 31448.5147575231,
+                "King Aluminium": 34448.0572127216,
+                "King Cobre": 38166.4293025684,
+                "King pMaxKote": 43385.1278146755
+            },
+            "cárter": {
+                "TakaShing": 6580.4035651586,
+                "OEM Aço": 10202.9515531475,
+                "Edelbrock Aluminium": 12971.8617544078,
+                "ProRacing Carbon": 16584.9749557404,
+                "Edelbrock DOPS": 21035.7891270278,
+                "ProRacing Dry+": 26082.903820985
+            },
+            "pistões": {
+                "OEM": 30761.6426305953,
+                "TakaShing Forjado": 44615.158784307,
+                "OEM Forjado": 70165.7176479766,
+                "ProRacing Steel+": 96085.8770220667,
+                "ProRacing Titanium+": 160986.7351664402
+            },
+            "virabrequim": {
+                "OEM": 27488.4682570087,
+                "TakaShing Forjado": 39867.7561848529,
+                "OEM Forjado": 62712.448554907,
+                "ProRacing Steel+": 85859.0886866175,
+                "ProRacing Titanium+": 143831.0264009778
+            }
+        },
+        "Óxido Nitroso": {
+            "kit instalação": {
+                "Kit Nitro": 17472.1648937617
+            },
+            "bico injetor": {
+                "TakaShing 0.3mm": 13470.4709849508,
+                "TakaShing 0.5mm": 43075.6427513374,
+                "NX 0.5mm": 64491.5422839958,
+                "NX 0.6mm": 81140.0984752533,
+                "NOS 0.7mm": 94273.6599292813,
+                "NOS 0.8mm": 105151.879743049,
+                "NOS 2.0mm EC": 114513.0641031358
+            },
+            "garrafas": {
+                "TakaShing 10 Lbs": 15799.0706243886,
+                "TakaShing 20 Lbs": 23698.6059365829,
+                "NX 20 Lbs": 26860.5973053896,
+                "NX Dual 40 Lbs": 31600.9169720412,
+                "NOS 20 Lbs": 56648.558348981,
+                "NOS 30 Lbs": 78789.2829986326,
+                "NOS Dual 40 Lbs": 91543.8327918451,
+                "NOS Dual 60 LBs": 102553.0784400769
+            }
+        },
+        "Redução de Peso": {
+            "reduções": {
+                "ProReduction Light Pack": 33264.4452097063,
+                "ProReduction Super Pack": 66528.8904157124,
+                "ProReduction Ultra Pack": 99793.3356247716,
+                "ProReduction Extreme Pack": 149689.9864229344,
+                "ProReduction Nismo Pack": 199586.6372210974,
+                "ProReduction Apex Pack": 249483.2880192604
+            }
+        },
+        "SuperCharger": {
+            "kit instalação": {
+                "Kit Supercharger": 14555.3340058814
+            },
+            "remover tudo": {
+                "Remover Supercharger": 3639.231263908
+            },
+            "compressor": {
+                "TakaShing Blower": 32626.8909893977,
+                "Vortech Blower": 71801.4552458421,
+                "Edelbrock Blower": 120679.808047312,
+                "Vortech CCSq V-30": 113504.8664728291,
+                "Vortech Sc 2200x": 185912.2674788117,
+                "ProRacing Sc Kompressor": 220158.9458289051,
+                "ProRacing SC Kompressor HP": 235815.1231544843
+            },
+            "polias": {
+                "TakaShing 3.9": 29120.6833320124,
+                "Magnuson 3.6": 43681.0249980187,
+                "Magnuson 3.2": 64066.4709363265,
+                "Edelbrock 3.0": 81536.9457237359,
+                "Edelbrock 2.6": 96097.2873692634,
+                "ProRacing 2.2": 116482.7333178104,
+                "ProRacing 2.1": 139778.3123570426,
+                "ProRacing 2.0": 154338.6540537671
+            }
+        },
+        "Turbo": {
+            "kit instalação": {
+                "Kit Turbo": 18138.1362048281
+            },
+            "remover tudo": {
+                "Remover Turbo": 4533.3245195146
+            },
+            "intercooler": {
+                "TakaShing": 27623.2831812752,
+                "ProRacing I-Flow": 44196.2854708301,
+                "HKS S-Type": 62152.9919294751,
+                "HKS R-Type": 105521.9577636494,
+                "Garret F80": 137840.6426907443,
+                "Mashimoto TMIC": 166291.2455189145,
+                "Mashimoto R-Line": 199715.4423693612,
+                "ProRacing Competition": 233139.6392198079
+            },
+            "Turbinas": {
+                "TakaShing .36": 52583.1777319988,
+                "SPA .42": 75719.098603191,
+                "SPA .48": 111475.2723927873,
+                "Garret .58": 169844.8494034093,
+                "Garret .63": 219798.5054076034,
+                "HKS .70": 269224.805639981,
+                "HKS .82": 326014.7343447814,
+                "MasterPower .70": 381227.4338045849,
+                "MasterPower .82": 431708.4455805956,
+                "MasterPower .84": 488498.3743365929
+            },
+            "válvula de alívio": {
+                "TakaShing": 7905.498680865,
+                "Beep Turbo USC": 11858.2480212973,
+                "SPA MCSI": 15810.9973617298,
+                "HKS ControFlow": 19763.7467021623,
+                "HKS GT II": 32413.028406783,
+                "ProRacing WGV": 45062.3101114037
+            },
+            "válvula de prioridade": {
+                "TakaShing": 9567.3951315315,
+                "Beep Turbo USC": 14349.8831643249,
+                "SPA MCSI": 19134.7902579433,
+                "HKS ControFlow": 23919.7473855581,
+                "HKS GT II": 39223.7533618123,
+                "ProRacing BOV": 54530.1652750953
+            }
+        },
+        "Transmissão": {
+            "caixa de marchas": {
+                "Z-Pro One": 24997.1874693488,
+                "Z-Pro Carbon": 31246.484336686
             }
         }
+    }
     };
-
-    const PRECOS_BASE = {};
-    for (const car in PRECOS_BASE_RAW) {
-        PRECOS_BASE[car] = {};
-        for (const group in PRECOS_BASE_RAW[car]) {
-            for (const category in PRECOS_BASE_RAW[car][group]) {
-                PRECOS_BASE[car][category] = PRECOS_BASE_RAW[car][group][category];
-            }
-        }
-    }
-    let buildPrices = {};
     
     
-    function parseContractValue(input) {
-        if (!input) return 0;
-        let value = input.toString().replace(/\s/g, '').replace(',', '.').toLowerCase();
+    // --- FUNÇÕES DE UTILITIES ---
+    
+    // Função para converter Lp$, kk, etc., para um número
+    function parseContractValue(value) {
+        if (!value) return 0;
+        let cleanedValue = String(value).toLowerCase().replace(/\s/g, '');
         let numericValue = 0;
-        if (value.endsWith('kk')) {
-            numericValue = parseFloat(value.replace('kk', '')) * 1000000;
-        } else if (value.endsWith('k')) {
-            numericValue = parseFloat(value.replace('k', '')) * 1000;
+    
+        if (cleanedValue.includes('kk')) {
+            numericValue = parseFloat(cleanedValue.replace('kk', '')) * 1000000;
+        } else if (cleanedValue.includes('k')) {
+            numericValue = parseFloat(cleanedValue.replace('k', '')) * 1000;
         } else {
-            numericValue = parseFloat(value) || 0;
+            // Remove pontos/vírgulas para formatação numérica padrão (aceita 1.000,00 ou 1,000.00)
+            cleanedValue = cleanedValue.replace(/\./g, '').replace(',', '.');
+            numericValue = parseFloat(cleanedValue);
         }
-        return isNaN(numericValue) ? 0 : Math.abs(numericValue);
-    }
-    
-    function formatarValor(valor) {
-        const formatter = new Intl.NumberFormat('pt-BR', {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
-            useGrouping: true 
-        });
-        return `Lp$${formatter.format(Math.abs(valor))}`;
-    }
-    
-    function updatePieceSummary() {
-        const selectedCar = carSelector.value;
-        const pieceSelectors = dynamicPieceSelectors.querySelectorAll('select');
-        let summaryHtml = '';
-        let pieceCount = 0;
         
-        if (!selectedCar) {
-            selectedPiecesList.innerHTML = '<p class="placeholder-text-summary">Selecione um carro para começar.</p>';
-            return;
+        return isNaN(numericValue) ? 0 : numericValue;
+    }
+    
+    // Função para formatar o número de volta para Lp$ (com 'kk', 'k' para valores altos, se não, decimal)
+    function formatarValor(num) {
+        if (isNaN(num)) return 'Lp$0.00';
+        
+        let absNum = Math.abs(num);
+        let prefix = num < 0 ? '-' : '';
+    
+        if (absNum >= 1000000000) { // Bilhões
+            return `${prefix}Lp$${(absNum / 1000000000).toFixed(2)}B`;
+        } else if (absNum >= 1000000) { // Milhões (kk)
+            return `${prefix}Lp$${(absNum / 1000000).toFixed(2)}kk`;
+        } else if (absNum >= 10000) { // Dezenas de Milhares (k) - para ser mais preciso
+             return `${prefix}Lp$${(absNum / 1000).toFixed(1)}k`;
+        } else { // Valores menores
+            return `${prefix}Lp$${absNum.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
         }
-        pieceSelectors.forEach(selector => {
-            const category = selector.dataset.category;
-            const selectedPiece = selector.value;
-            selector.classList.remove('selected-piece-highlight'); 
-            if (selectedPiece) {
-                pieceCount++;
-                selector.classList.add('selected-piece-highlight'); 
-                summaryHtml += `<span class="piece-item">1x <strong>${category.charAt(0).toUpperCase() + category.slice(1)}</strong> > ${selectedPiece}</span>`;
+    }
+
+    
+    // Função para atualizar o resumo das peças selecionadas
+    function updatePieceSummary() {
+        let summaryHtml = '';
+        let hasPieces = false;
+        
+        // Categoria é o nome do grupo de peças (ex: 'cabeçote') e o valor é o preço da peça
+        for (const category in buildPrices) {
+            const price = buildPrices[category];
+            if (price > 0) {
+                // Encontra a peça selecionada em si (ex: 'ProRacing Header S1') para exibição
+                const selectElement = document.querySelector(`select[data-category="${category}"]`);
+                let pieceName = "Peça não encontrada";
+                if (selectElement) {
+                    const selectedOption = selectElement.options[selectElement.selectedIndex];
+                    if (selectedOption && selectedOption.value !== "") {
+                        pieceName = selectedOption.textContent.split('(')[0].trim(); // Pega apenas o nome, ignorando o preço na option text
+                    } else if (selectElement.dataset.lastSelection) {
+                         pieceName = selectElement.dataset.lastSelection; // Fallback se o select foi resetado mas o buildPrices ainda tem valor
+                    }
+                }
+                
+                // Formata o preço da peça
+                const formattedPrice = formatarValor(price);
+                
+                // Tenta capitalizar o nome da categoria para o resumo
+                const formattedCategory = category.charAt(0).toUpperCase() + category.slice(1);
+                
+                summaryHtml += `<p><strong>${formattedCategory}:</strong> ${pieceName} - <span>${formattedPrice}</span></p>`;
+                hasPieces = true;
             }
-        });
-        if (pieceCount > 0) {
+        }
+    
+        if (hasPieces) {
             selectedPiecesList.innerHTML = summaryHtml;
         } else {
             selectedPiecesList.innerHTML = '<p class="placeholder-text-summary">Nenhuma peça de tuning selecionada.</p>';
@@ -905,71 +927,70 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Função central que soma os custos e exibe o resultado
     function somarCustoTotalAtual() {
-        let totalCents = 0; 
+        let totalCents = 0;
         for (const category in buildPrices) {
             const value = buildPrices[category] || 0;
+            // Usa o fator de correção para somar números de ponto flutuante com segurança
             totalCents += Math.round(value * DECIMAL_FACTOR); 
         }
-        let totalPartsCost = totalCents / DECIMAL_FACTOR; 
+        
+        let totalPartsCost = totalCents / DECIMAL_FACTOR;
+        
         const carValue = parseContractValue(carValueInput.value);
         const contractValue = parseContractValue(contractValueInput.value);
         
         let totalCost = totalPartsCost + carValue;
-        totalCostDisplay.textContent = formatarValor(totalCost); 
-
-        const finalCost = contractValue - totalCost; 
+        
+        totalCostDisplay.textContent = formatarValor(totalCost);
+        
+        const finalCost = contractValue - totalCost;
+        
         let finalCostText = formatarValor(finalCost);
         
         finalCostDisplay.classList.remove('lucro', 'prejuizo', 'neutro');
-        alertStatusSpan.style.color = 'white'; 
-        
+        alertStatusSpan.style.color = 'white';
         resultFinalStatus.classList.remove('lucro', 'prejuizo', 'neutro');
         
         let finalStatusSummaryText = formatarValor(finalCost);
-
 
         if (finalCost > 0) {
             finalCostDisplay.classList.add('lucro');
             alertStatusSpan.textContent = '(Lucro)';
             alertStatusSpan.style.color = 'var(--cor-lucro)';
-            
             resultFinalStatus.classList.add('lucro');
         } else if (finalCost < 0) {
             finalCostDisplay.classList.add('prejuizo');
             alertStatusSpan.textContent = '(Prejuízo)';
             alertStatusSpan.style.color = 'var(--cor-prejuizo)';
-            
-            finalCostText = `- ${finalCostText}`; 
-            finalStatusSummaryText = `- ${finalStatusSummaryText}`;
-            
+            finalCostText = `- ${finalCostText}`; // Adiciona o sinal de menos no display principal
+            finalStatusSummaryText = finalCostText; // Usa a versão com sinal
             resultFinalStatus.classList.add('prejuizo');
         } else {
             finalCostDisplay.classList.add('neutro');
             alertStatusSpan.textContent = '(Neutro)';
-            
             resultFinalStatus.classList.add('neutro');
         }
         
         finalCostDisplay.textContent = finalCostText;
-
+        
         // --- ATUALIZAÇÃO DOS NOVOS CAMPOS DE DETALHE ---
         const selectedCar = carSelector.value || "---";
-        const factor = parseFloat(currentInflationInput.value) || 1; 
-
+        const factor = parseFloat(currentInflationInput.value) || 1;
         resultCarModel.textContent = selectedCar;
-        resultInflationFactor.textContent = factor.toFixed(4); 
+        resultInflationFactor.textContent = factor.toFixed(4); // Exibe o fator com 4 casas decimais
         resultFinalStatus.textContent = finalStatusSummaryText;
         // ----------------------------------------------
-
+        
         updatePieceSummary();
     }
     
     function recalcularEPopularPrecos() {
+        // Esta função é chamada quando o fator de inflação ou o carro muda
         const selectedCar = carSelector.value;
-        const factor = parseFloat(currentInflationInput.value) || 1; 
+        const factor = parseFloat(currentInflationInput.value) || 1;
         
-        popularCategorias(factor); 
-        somarCustoTotalAtual(); 
+        popularCategorias(factor);
+        somarCustoTotalAtual();
     }
     
     // --- FUNÇÕES DE RENDERIZAÇÃO ---
@@ -983,39 +1004,47 @@ document.addEventListener('DOMContentLoaded', () => {
             option.textContent = carName;
             carSelector.appendChild(option);
         });
+        
         // Garante que o placeholder do seletor de peças apareça se o carro não estiver selecionado
         const placeholder = dynamicPieceSelectors.querySelector('p.placeholder-text');
         if (placeholder) placeholder.style.display = 'block';
+        
+        // Limpa a seleção de preços ao iniciar
         buildPrices = {};
     }
     
     function popularCategorias(factor = 1) {
         const selectedCar = carSelector.value;
+        
+        // Armazena a seleção atual para tentar preservá-la ao repopular
         const currentSelections = {};
         dynamicPieceSelectors.querySelectorAll('select').forEach(selector => {
             currentSelections[selector.dataset.category] = selector.value;
         });
-
+    
         const selectorsContainer = dynamicPieceSelectors;
+        
+        // Limpa seletores antigos
         selectorsContainer.querySelectorAll('.selection-group, .group-separator, .group-header').forEach(el => el.remove());
         
+        // Esconde o placeholder se um carro foi selecionado
         const placeholder = selectorsContainer.querySelector('p.placeholder-text');
         if (placeholder) placeholder.style.display = 'none';
-
+        
         const tempBuildPrices = {};
-
+        
         if (!selectedCar || !PRECOS_BASE_RAW[selectedCar] || Object.keys(PRECOS_BASE_RAW[selectedCar]).length === 0) {
-             if (placeholder) {
-                 placeholder.textContent = `Selecione um carro acima para ver as opções de peças.`;
-                 placeholder.style.display = 'block';
-             }
-             buildPrices = {};
-             return;
+            if (placeholder) {
+                placeholder.textContent = `Selecione um carro acima para ver as opções de peças.`;
+                placeholder.style.display = 'block';
+            }
+            buildPrices = {};
+            return;
         }
-
+        
         const pieceGroups = PRECOS_BASE_RAW[selectedCar];
         let isFirstGroup = true;
-
+        
         for (const groupName in pieceGroups) {
             if (!isFirstGroup) {
                 const separator = document.createElement('div');
@@ -1023,38 +1052,37 @@ document.addEventListener('DOMContentLoaded', () => {
                 selectorsContainer.appendChild(separator);
             }
             isFirstGroup = false;
-
+            
+            // Título do Grupo (Motor, Turbo, etc.)
             const groupTitle = document.createElement('h3');
             groupTitle.className = 'group-header';
-            let groupIcon = '🛠️';
+            let groupIcon = '🛠️'; 
             if (groupName.toLowerCase().includes('motor')) groupIcon = '🔥';
             else if (groupName.toLowerCase().includes('turbo')) groupIcon = '💨';
             else if (groupName.toLowerCase().includes('transmissão')) groupIcon = '⚙️';
             else if (groupName.toLowerCase().includes('suspensão')) groupIcon = '🛞';
             else if (groupName.toLowerCase().includes('estética')) groupIcon = '✨';
-
             groupTitle.innerHTML = `${groupIcon} ${groupName}`;
             selectorsContainer.appendChild(groupTitle);
-
-
-            const categoriesInGroup = pieceGroups[groupName];
+            
+            const categoriesInGroup = pieceGroups[groupName]; // Ex: { "cabeçote": {...}, "comandos": {...} }
             
             for (const categoryName in categoriesInGroup) {
-
-                const pecasData = categoriesInGroup[categoryName];
+                const pecasData = categoriesInGroup[categoryName]; // Ex: { "TakaShing": 2600.1701, ... }
+                
                 const groupDiv = document.createElement('div');
                 groupDiv.className = 'selection-group input-group';
-
+                
                 const label = document.createElement('label');
                 label.htmlFor = `select_${categoryName.replace(/\s/g, '')}`;
                 
                 const titleSpan = document.createElement('span');
                 titleSpan.className = 'category-title';
-                
                 const categoryDisplay = categoryName.charAt(0).toUpperCase() + categoryName.slice(1);
-                let exampleText = Object.keys(pecasData)[0] || 'Item';
-                const iconText = `${groupIcon} ${categoryDisplay}`; 
                 
+                let exampleText = Object.keys(pecasData)[0] || 'Item';
+                
+                const iconText = `${groupIcon} ${categoryDisplay}`;
                 titleSpan.textContent = iconText;
                 label.appendChild(titleSpan);
                 groupDiv.appendChild(label);
@@ -1062,77 +1090,104 @@ document.addEventListener('DOMContentLoaded', () => {
                 const selector = document.createElement('select');
                 selector.id = `select_${categoryName.replace(/\s/g, '')}`;
                 selector.dataset.category = categoryName;
-
+                
                 const placeholderOption = document.createElement('option');
                 placeholderOption.value = "";
                 placeholderOption.textContent = `Selecione a peça desejada (Ex: ${exampleText.charAt(0).toUpperCase() + exampleText.slice(1)})`;
                 selector.appendChild(placeholderOption);
-                
+    
+                let selectedValue = ""; // Armazena a peça que foi selecionada antes
+    
                 for (const pecaName in pecasData) {
                     const option = document.createElement('option');
                     option.value = pecaName;
+                    
                     const precoBase = pecasData[pecaName];
                     const precoFinal = precoBase * factor;
-                    option.textContent = pecaName; 
-                    option.dataset.price = precoFinal.toString();
+                    
+                    // Exibe o preço reajustado ao lado do nome da peça
+                    option.textContent = `${pecaName} (${formatarValor(precoFinal)})`;
+                    
+                    // Armazena o preço final como um atributo de dados (em string)
+                    option.dataset.price = precoFinal.toString(); 
                     selector.appendChild(option);
-
+    
+                    // Tenta restaurar a seleção anterior
                     if (pecaName === currentSelections[categoryName]) {
-                        option.selected = true;
-                        tempBuildPrices[categoryName] = precoFinal;
+                        selectedValue = pecaName;
+                        tempBuildPrices[categoryName] = precoFinal; // Salva o novo preço reajustado
                     }
                 }
-                
-                selector.addEventListener('change', (event) => {
-                    const selectedOption = event.target.options[event.target.selectedIndex];
-                    const category = event.target.dataset.category;
+    
+                // Aplica a seleção
+                if (selectedValue !== "") {
+                    selector.value = selectedValue;
+                } else {
+                    // Se não for possível restaurar, assegura que o buildPrices não contenha um preço antigo
+                    tempBuildPrices[categoryName] = 0;
+                }
+    
+                // Listener para atualizar o custo total e o resumo sempre que uma peça for alterada
+                selector.addEventListener('change', function() {
+                    const selectedOption = this.options[this.selectedIndex];
+                    const category = this.dataset.category;
                     
-                    if (selectedOption && selectedOption.dataset.price) {
-                        buildPrices[category] = parseFloat(selectedOption.dataset.price); 
+                    if (selectedOption && selectedOption.value !== "") {
+                        const price = parseFloat(selectedOption.dataset.price);
+                        buildPrices[category] = isNaN(price) ? 0 : price;
+                        // Opcional: Armazenar o nome da peça selecionada para o resumo
+                        this.dataset.lastSelection = selectedOption.textContent.split('(')[0].trim();
                     } else {
+                        // Se for selecionada a opção placeholder/vazia
                         buildPrices[category] = 0;
+                        this.dataset.lastSelection = "";
                     }
+                    
                     somarCustoTotalAtual(); 
                 });
-
+    
                 groupDiv.appendChild(selector);
                 selectorsContainer.appendChild(groupDiv);
             } 
         } 
         
+        // Atualiza o objeto global de preços com os novos preços ajustados
         buildPrices = tempBuildPrices; 
     }
-
-    // --- FUNÇÃO DE RESET ---
+    
+    // --- FUNÇÃO DE RESET MODIFICADA ---
     function resetAllInputs() {
         // 1. Resetar inputs e seletor
-        currentInflationInput.value = "1.05";
+        // currentInflationInput.value = "1.05"; // <<<<<<<<<< LINHA REMOVIDA/COMENTADA (Mantém o Fator de Multiplicação)
         contractValueInput.value = "";
         carValueInput.value = "";
         carSelector.value = ""; 
         
         // 2. Limpar preços e recalcular (o fluxo recalcula tudo e limpa o display)
         buildPrices = {};
-        recalcularEPopularPrecos(); 
+        recalcularEPopularPrecos(); // Isso repopulará os seletores de peças e resetará a soma
         
         // 3. Colocar o foco no primeiro campo para facilidade do usuário
         contractValueInput.focus();
     }
-
-    // --- INICIALIZAÇÃO E LISTENERS DE EVENTO ---
-
+    
+    // --- INICIALIZAÇÃO E LISTENERS DE EVENTO ---\
+    
     popularCarros();
     recalcularEPopularPrecos(); 
-
+    
     // Apenas recalcula a soma (não redesenha peças)
     contractValueInput.addEventListener('input', somarCustoTotalAtual); 
     carValueInput.addEventListener('input', somarCustoTotalAtual);      
-
+    
     // Recalcula e Repopula Peças
     currentInflationInput.addEventListener('input', recalcularEPopularPrecos);
     carSelector.addEventListener('change', recalcularEPopularPrecos); 
-    calculateBtn.addEventListener('click', recalcularEPopularPrecos);
     
-    // Listener para o novo botão de reset
+    // Listener para o botão de reset
     resetContractBtn.addEventListener('click', resetAllInputs);
+    
+    // Listener para o botão principal de cálculo (se houver)
+    calculateBtn.addEventListener('click', somarCustoTotalAtual);
+    
 });
