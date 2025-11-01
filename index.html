@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HashImports - Calculadora</title>
+    <link rel="stylesheet" href="style.css"> 
+</head>
+<body>
+    <div id="countdownContainer" style="
+    background-color: #3c4046; 
+    color: #00c0aa; 
+    padding: 10px; 
+    border-radius: 8px; 
+    margin-bottom: 20px; 
+    text-align: center; 
+    font-weight: bold;
+    display: none; /* Inicia oculto e será mostrado pelo script */
+">
+    Sua chave expira em: <span id="countdownTimer" style="color: #42a5f5;">--:--:--</span>
+</div>
+
+    <div class="container-principal">
+        <h1>HashImports - Calculadora</h1>
+
+        <div class="main-content-wrapper">
+            
+            <div class="coluna-controles">
+                <div class="card">
+                    <h2>Dados do Negócio e Carro</h2>
+
+                    <div class="input-group secao-controle">
+                        <label for="currentInflation">Fator de Multiplicação (Inflação)</label>
+                        <input type="number" id="currentInflation" value="1.05" step="0.0001" min="0">
+                        <p class="info-fator">Use 1.05 para 5% de inflação. Use 1 para 0%.</p>
+                    </div>
+
+                    <div class="input-group secao-controle">
+                        <label for="contractValueInput">Valor Total do Contrato (Lp$)</label>
+                        <input type="text" id="contractValueInput" placeholder="Ex: 50k, 1.2kk, 75000">
+                    </div>
+
+                    <div class="input-group secao-controle">
+                        <label for="carValueInput">Valor do Carro (Lp$)</label>
+                        <input type="text" id="carValueInput" placeholder="Ex: 30k, 1kk, 50000">
+                    </div>
+                    
+                    <div class="input-group secao-controle">
+                        <label for="carSelector">Selecione o Modelo do Carro</label>
+                        <select id="carSelector">
+                            </select>
+                    </div>
+
+                    <div class="secao-controle">
+                        <button id="calculateBtn">Calcular Preços e Total</button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2>Peças de Tuning</h2>
+                    <div id="dynamicPieceSelectors">
+                        <p class="placeholder-text">Selecione um carro acima para ver as opções de peças.</p>
+                        </div>
+                </div>
+            </div>
+
+            <div class="coluna-resultado">
+                <div class="card">
+                    <h2>Resumo das Peças Selecionadas</h2>
+                    <div id="selectedPiecesList">
+                        <p class="placeholder-text-summary">Selecione as peças para visualizar o resumo.</p>
+                    </div>
+                </div>
+                
+                <div class="card secao-resultado">
+                    <h3>Custo Total Estimado (Peças + Carro)</h3>
+                    <span id="totalCost">Lp$0.00</span>
+                    
+                    <h3>Lucro / Prejuízo <span id="alertStatus"></span></h3>
+                    <span id="finalCostDisplay" class="neutro">Lp$0.00</span>
+                    
+                    <div class="result-details">
+                        <p>Modelo: <strong id="resultCarModel">---</strong></p>
+                        <p>Inflação Aplicada: <strong id="resultInflationFactor">---</strong></p>
+                        <p>Resultado: <strong id="resultFinalStatus">---</strong></p>
+                    </div>
+                    
+                    <button id="resetContractBtn">Montar Outro Contrato</button>
+                    
+                    <p class="nota-final">
+                        * O cálculo é feito com base na inflação atual de mercado (Fator)
+                        e reflete o custo final da venda após a montagem.
+                    </p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+document.addEventListener('DOMContentLoaded', () => {
+    const countdownContainer = document.getElementById('countdownContainer');
+    const countdownTimer = document.getElementById('countdownTimer');
+    const expiresAtISO = sessionStorage.getItem('keyExpiresAt');
+    const activeKey = sessionStorage.getItem('serialKeyActive');
+
+    // ----------------------------------------------------------
+    //  CONFIGURAÇÃO PARA LOGOUT AUTOMÁTICO
+    // ----------------------------------------------------------
+    const LOGIN_PAGE_URL = "login.html"; // Garanta que este é o nome correto
+    const SESSION_KEY_LOCK = "serialKeyLock";
+    
+    // Função para fazer o logout e liberar a chave
+    function forceLogout() {
+        // Libera a chave do lock global no localStorage
+        if (localStorage.getItem(SESSION_KEY_LOCK) === activeKey) {
+             localStorage.removeItem(SESSION_KEY_LOCK);
+        }
+        // Limpa a sessão
+        sessionStorage.removeItem('serialKeyActive');
+        sessionStorage.removeItem('keyExpiresAt');
+        
+        alert("Sua chave de acesso expirou! Você será redirecionado para o login.");
+        window.location.href = LOGIN_PAGE_URL;
+    }
+
+    // ----------------------------------------------------------
+    // LÓGICA DO CONTADOR
+    // ----------------------------------------------------------
+    if (!expiresAtISO || !activeKey) {
+        // Se não houver data de expiração ou chave ativa, redireciona para login (segurança)
+        countdownContainer.style.display = 'none';
+        // forceLogout(); // Pode ser agressivo demais. Apenas escondemos se não há dados.
+        return; 
+    }
+    
+    const expirationDate = new Date(expiresAtISO);
+    countdownContainer.style.display = 'block';
+
+    function updateCountdown() {
+        const now = new Date();
+        const diff = expirationDate.getTime() - now.getTime(); // Diferença em milissegundos
+
+        if (diff <= 0) {
+            clearInterval(timerInterval);
+            countdownTimer.textContent = "EXPIRADO!";
+            forceLogout(); // Chama o logout automático
+            return;
+        }
+
+        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+        // Formata com zeros à esquerda
+        const d = days > 0 ? `${days}d ` : '';
+        const h = String(hours).padStart(2, '0');
+        const m = String(minutes).padStart(2, '0');
+        const s = String(seconds).padStart(2, '0');
+        
+        countdownTimer.textContent = `${d}${h}:${m}:${s}`;
+    }
+
+    // Atualiza o contador imediatamente e depois a cada segundo
+    updateCountdown();
+    const timerInterval = setInterval(updateCountdown, 1000);
+
+    // Adiciona um listener para o evento beforeunload
+    window.addEventListener('beforeunload', () => {
+        clearInterval(timerInterval);
+    });
+});
+</script>
+</body>
+</html>

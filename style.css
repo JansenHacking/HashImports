@@ -1,0 +1,370 @@
+/* CSS para um design elegante, moderno e Dark Mode Sutil */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&display=swap');
+
+:root {
+    --cor-fundo-principal: #1f2125;   /* Quase preto, fundo principal elegante */
+    --cor-cartao: #2a2d32;           /* Fundo dos cartões (mais escuro que o fundo) */
+    --cor-input-bg: #3c4046;         /* Fundo dos inputs e selects (cinza escuro) */
+    --cor-texto: #e0e6eb;            /* Texto principal (branco suave) */
+    --cor-titulo: #ffffff;           /* Títulos em branco puro */
+    --cor-principal: #42a5f5;        /* Azul vibrante (acentos, botões) */
+    --cor-secundaria: #00c0aa;       /* Cían para destaque (resultados, alerta) */
+    --cor-borda-suave: #444851;      /* Borda para separação suave */
+    
+    /* CORES DE RESULTADO */
+    --cor-total-bg: #3c4046;         /* Background do Custo Total */
+    --cor-lucro: #4caf50;            /* Verde vibrante para Lucro */
+    --cor-prejuizo: #ef5350;         /* Vermelho vibrante para Prejuízo */
+
+    /* Sombra mais pronunciada e moderna */
+    --sombra-elegante: 0 10px 30px rgba(0, 0, 0, 0.3); 
+}
+
+/* Garante que o fundo cubra toda a área visível do navegador */
+html, body {
+    height: 100%;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--cor-fundo-principal); 
+    color: var(--cor-texto);
+    margin: 0;
+    padding: 60px 20px; 
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+}
+
+.container-principal {
+    max-width: 1250px; 
+    width: 100%;
+    padding: 0; 
+}
+
+h1 {
+    color: var(--cor-principal);
+    text-align: center;
+    margin-bottom: 50px; 
+    font-weight: 800; 
+    font-size: 2.5em;
+    letter-spacing: -0.5px;
+}
+
+h2 {
+    color: var(--cor-titulo); 
+    font-size: 1.35em;
+    margin-bottom: 25px;
+    font-weight: 700;
+    border-bottom: 2px solid var(--cor-borda-suave);
+    padding-bottom: 10px;
+}
+
+/* Espaçamento para todas as caixas de input/select/grupo */
+.input-group {
+    margin-bottom: 20px; 
+}
+
+/* TÍTULO DO GRUPO PRINCIPAL (Ex: Motor, Turbo) */
+.group-header {
+    color: var(--cor-principal); /* Cor de destaque */
+    font-size: 1.5em;
+    font-weight: 700;
+    margin-top: 35px; 
+    margin-bottom: 5px; 
+    padding-bottom: 5px;
+    border-bottom: 1px solid var(--cor-borda-suave);
+}
+
+/* Separador visual entre os grandes grupos */
+.group-separator {
+    height: 1px;
+    background-color: var(--cor-borda-suave);
+    margin: 30px 0; /* Espaçamento grande entre grupos */
+    opacity: 0.5;
+}
+
+
+/* LAYOUT DE COLUNAS */
+.main-content-wrapper {
+    display: flex;
+    gap: 35px; 
+}
+.coluna-controles {
+    flex: 2; 
+    min-width: 450px;
+}
+.coluna-resultado {
+    flex: 1; 
+    min-width: 300px;
+    display: flex;
+    flex-direction: column;
+    gap: 35px;
+}
+
+/* Estilo de Cartão (Card) */
+.card {
+    background-color: var(--cor-cartao); 
+    padding: 35px; 
+    border-radius: 12px; 
+    box-shadow: var(--sombra-elegante); 
+    border: 1px solid var(--cor-borda-suave); 
+    transition: transform 0.2s;
+}
+.card:hover {
+    transform: translateY(-2px); 
+}
+
+/* DESTAQUE DE CATEGORIA (Aplicado a Cabeçote, Coletor, etc.) */
+.category-title {
+    display: block; 
+    text-align: left; 
+    font-weight: 700;
+    font-size: 1em;
+    color: var(--cor-secundaria);
+    background-color: rgba(0, 192, 170, 0.1); 
+    padding: 8px 15px; 
+    margin-bottom: 15px;
+    border-radius: 6px; 
+    letter-spacing: 0.5px;
+}
+
+/* ESTILIZAÇÃO DOS INPUTS E SELECTS */
+.secao-controle label,
+#dynamicPieceSelectors label {
+    font-weight: 500;
+    color: var(--cor-texto);
+    display: block;
+    margin-bottom: 8px;
+}
+
+.secao-controle input[type="number"], 
+.secao-controle input[type="text"], 
+.secao-controle select,
+#dynamicPieceSelectors select {
+    padding: 14px 15px; 
+    border: 1px solid var(--cor-borda-suave); 
+    border-radius: 8px; 
+    width: 100%;
+    box-sizing: border-box;
+    font-size: 16px;
+    color: var(--cor-texto);
+    background-color: var(--cor-input-bg); 
+    transition: border-color 0.2s, box-shadow 0.2s, background-color 0.2s;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%2342a5f5%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-24.8%200l-88%2088-88-88a17.6%2017.6%200%200%200-24.8%2024.8l100%20100c6.4%206.4%2018%206.4%2024.8%200l100-100a17.6%2017.6%200%200%200%200-24.8z%22%2F%3E%3C%2Fsvg%3E');
+    background-repeat: no-repeat;
+    background-position: right 15px top 50%;
+    background-size: 10px; 
+}
+.secao-controle input[type="text"] {
+    background-image: none; 
+}
+
+.secao-controle input:focus, 
+.secao-controle select:focus,
+#dynamicPieceSelectors select:focus {
+    border-color: var(--cor-principal); 
+    box-shadow: 0 0 0 2px rgba(66, 165, 245, 0.5); 
+    outline: none;
+    background-color: #33373d;
+}
+
+/* CLASSE DE DESTAQUE PARA SELECT PREENCHIDO */
+#dynamicPieceSelectors select.selected-piece-highlight {
+    background-color: var(--cor-input-bg); 
+    border-color: var(--cor-secundaria);
+    box-shadow: 0 0 0 1px var(--cor-secundaria);
+}
+
+/* BOTÃO DE CÁLCULO */
+.secao-controle button {
+    background-color: var(--cor-principal); 
+    color: white;
+    padding: 16px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 700;
+    font-size: 1.1em;
+    width: 100%;
+    transition: background-color 0.2s, transform 0.1s;
+    letter-spacing: 0.5px;
+}
+
+.secao-controle button:hover {
+    background-color: #3385cc; 
+    transform: translateY(-2px);
+}
+
+/* Estilo de Informação e Fator */
+.info-fator {
+    font-size: 0.85em;
+    color: #90a4ae;
+    margin-top: 6px;
+    padding-left: 5px;
+}
+
+/* Seção de Resumo de Peças */
+.piece-item {
+    display: block;
+    border-bottom: 1px dashed var(--cor-borda-suave);
+    padding: 10px 0;
+    font-weight: 400;
+}
+.piece-item strong {
+    color: var(--cor-principal); 
+    font-weight: 600;
+}
+.placeholder-text, .placeholder-text-summary {
+    color: #90a4ae;
+    text-align: center;
+    padding: 15px 0;
+    font-style: italic;
+    font-size: 0.9em;
+}
+
+/* Seção de Resultado (Background de destaque) */
+.secao-resultado {
+    margin-top: 0;
+    padding: 30px; 
+    background-color: var(--cor-total-bg); 
+    color: var(--cor-texto);
+    border-radius: 12px;
+    text-align: center;
+    box-shadow: var(--sombra-elegante); 
+    border: 1px solid var(--cor-borda-suave);
+}
+
+h3 {
+    color: var(--cor-titulo); 
+    font-size: 1.2em;
+    margin-bottom: 12px;
+    opacity: 0.9;
+    font-weight: 600;
+}
+
+/* CUSTO TOTAL (Maior) - CORREÇÃO DE TAMANHO */
+#totalCost {
+    font-family: 'Consolas', monospace;
+    font-size: 3.0em; 
+    font-weight: 900;
+    color: var(--cor-secundaria); 
+    display: block;
+    margin-top: 10px;
+    letter-spacing: -1.0px; 
+    overflow-wrap: break-word; 
+}
+
+/* CUSTO FINAL (Subtraído) - CORREÇÃO DE TAMANHO */
+#finalCostDisplay {
+    font-family: 'Consolas', monospace;
+    font-size: 2.4em; 
+    font-weight: 900;
+    display: block;
+    margin-top: 8px;
+    letter-spacing: -0.8px; 
+    overflow-wrap: break-word;
+}
+
+/* Estilo para os detalhes do resultado (Carro e Inflação) */
+.result-details {
+    text-align: left;
+    margin: 25px 0 15px 0;
+    padding: 10px 15px;
+    border-top: 1px solid var(--cor-borda-suave);
+    border-bottom: 1px solid var(--cor-borda-suave);
+}
+.result-details p {
+    font-size: 0.95em;
+    margin: 5px 0;
+    font-weight: 400;
+}
+.result-details strong {
+    color: var(--cor-principal);
+    font-weight: 700;
+    float: right; /* Alinha o valor à direita */
+}
+
+/* Classes para Lucro/Prejuízo */
+.lucro {
+    color: var(--cor-lucro) !important;
+}
+.prejuizo {
+    color: var(--cor-prejuizo) !important;
+}
+.neutro {
+    color: #ffffff; 
+}
+
+/* Garantir cor para os campos de detalhe */
+.result-details strong.lucro { color: var(--cor-lucro) !important; }
+.result-details strong.prejuizo { color: var(--cor-prejuizo) !important; }
+.result-details strong.neutro { color: #ffffff !important; }
+
+.nota-final {
+    font-size: 0.8em;
+    opacity: 0.7;
+    margin-top: 15px;
+}
+
+/* NOVO: Estilo para o Botão de Reset */
+#resetContractBtn {
+    background-color: #555c66; /* Cinza mais suave */
+    color: white;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 1em;
+    width: 100%;
+    margin-top: 20px; /* Espaçamento após detalhes */
+    transition: background-color 0.2s, transform 0.1s;
+}
+
+#resetContractBtn:hover {
+    background-color: #6a717d;
+    transform: translateY(-1px);
+}
+
+/* Responsividade */
+@media (max-width: 1050px) {
+    .main-content-wrapper {
+        flex-direction: column;
+        gap: 35px;
+    }
+    .coluna-controles, .coluna-resultado {
+        min-width: auto;
+    }
+    .coluna-controles > .card {
+        margin-bottom: 35px;
+    }
+    h1 {
+        font-size: 2em;
+    }
+    #totalCost {
+        font-size: 2.8em; 
+        letter-spacing: -1.5px;
+    }
+    #finalCostDisplay {
+        font-size: 2.2em;
+    }
+}
+@media (max-width: 600px) {
+    body {
+        padding: 30px 15px;
+    }
+    .card {
+        padding: 25px;
+    }
+    #totalCost {
+        font-size: 2.5em; 
+    }
+    #finalCostDisplay {
+        font-size: 2.0em;
+    }
+}

@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Geração de Chaves Admin</title>
+    <style>
+        /* CSS re-utilizado para consistência */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #1f2125;
+            color: #e0e6eb;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            flex-direction: column;
+        }
+        .container {
+            background-color: #2a2d32;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            width: 400px;
+            max-width: 90%;
+            text-align: center;
+            border: 1px solid #444851;
+            margin-bottom: 20px;
+        }
+        h2 {
+            color: #00c0aa;
+            margin-bottom: 25px;
+            font-weight: 700;
+        }
+        .input-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        input[type="text"], input[type="password"], input[type="number"], select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #444851;
+            border-radius: 8px;
+            box-sizing: border-box;
+            background-color: #3c4046;
+            color: #e0e6eb;
+            font-size: 16px;
+        }
+        .duration-group {
+            display: flex;
+            gap: 10px;
+            align-items: flex-end;
+        }
+        .duration-group input {
+            flex: 2;
+        }
+        .duration-group select {
+            flex: 1;
+            width: auto;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            margin-top: 10px;
+            border: none;
+            border-radius: 8px;
+            background-color: #42a5f5;
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        button.generate {
+            background-color: #00c0aa;
+        }
+        button.generate:hover {
+            background-color: #00a08e;
+        }
+        #message {
+            margin-top: 20px;
+            font-weight: 500;
+        }
+        .success { color: #4caf50; }
+        .error { color: #ef5350; }
+        .info { color: #42a5f5; }
+        
+        #keyList {
+            font-size: 0.85em;
+            word-break: break-all;
+            margin-top: 15px;
+            padding: 10px;
+            background-color: #3c4046;
+            border-radius: 6px;
+            max-height: 250px;
+            overflow-y: auto;
+            text-align: left;
+        }
+        .key-item {
+            padding: 8px 0;
+            border-bottom: 1px dotted #555;
+            display: flex;
+            flex-direction: column;
+        }
+        .key-item:last-child {
+            border-bottom: none;
+        }
+        .key-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .key-info span {
+            font-weight: 600;
+            color: #42a5f5;
+        }
+        .key-info small {
+            font-size: 0.8em;
+            color: #aaa;
+        }
+        .key-item.expired span {
+            color: #ef5350;
+        }
+        .delete-btn {
+            background: #ef5350;
+            color: white;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.75em;
+        }
+        .delete-btn:hover {
+            background: #d32f2f;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container" id="loginAdminContainer">
+        <h2>Acesso Administrativo</h2>
+        <form id="adminLoginForm">
+            <div class="input-group">
+                <label for="masterKey">Chave Mestra:</label>
+                <input type="password" id="masterKey" required placeholder="Insira a chave secreta">
+            </div>
+            <button type="submit">Acessar Admin</button>
+        </form>
+        <p id="message"></p>
+    </div>
+
+    <div class="container" id="adminDashboard" style="display:none;">
+        <h2>🔑 Gerenciador de Chaves</h2>
+        <p class="success">Acesso Concedido.</p>
+        
+        <div class="input-group">
+            <label>Duração da Nova Chave:</label>
+            <div class="duration-group">
+                <input type="number" id="durationValue" value="30" min="1" required>
+                <select id="durationUnit">
+                    <option value="days">Dias</option>
+                    <option value="hours">Horas</option>
+                </select>
+            </div>
+        </div>
+        
+        <button id="generateKeyBtn" class="generate">Gerar e Salvar Nova Chave</button>
+        
+        <p style="margin-top: 20px; font-weight: 600; color: #42a5f5; border-bottom: 1px solid #444851; padding-bottom: 5px;">Chaves Válidas Salvas Localmente:</p>
+        <div id="keyList"></div>
+        
+        <button id="logoutAdminBtn" style="background-color: #555c66;">Sair do Admin</button>
+    </div>
+
+    <script>
+        // **********************************************************
+        //  CHAVE SECRETA DO ADMINISTRADOR - MUDE ESTA CHAVE!
+        // **********************************************************
+        const MASTER_KEY = "JANSENGF"; 
+        // **********************************************************
+
+        // --- CONFIGURAÇÃO DE CHAVES ---
+        const LOCAL_STORAGE_KEYS = "validSerialKeys";
+        // As chaves default agora são objetos com uma validade longa (ex: 10 anos)
+        const DEFAULT_KEYS = [
+            { key: "TESTE-5678-FREE", expires: new Date(Date.now() + 315360000000).toISOString() }
+        ];
+        let VALID_KEYS = [];
+
+        // --- FUNÇÕES DE UTILIDADE ---
+
+        function loadKeys() {
+            const storedKeys = localStorage.getItem(LOCAL_STORAGE_KEYS);
+            if (storedKeys) {
+                // Filtra e converte o JSON
+                VALID_KEYS = JSON.parse(storedKeys).filter(k => k.key && k.expires); 
+            } else {
+                VALID_KEYS = DEFAULT_KEYS;
+                localStorage.setItem(LOCAL_STORAGE_KEYS, JSON.stringify(DEFAULT_KEYS));
+            }
+        }
+        
+        function saveKeys() {
+            localStorage.setItem(LOCAL_STORAGE_KEYS, JSON.stringify(VALID_KEYS));
+            updateKeyListDisplay();
+        }
+
+        function generateUniqueKey() {
+            const part = () => Math.random().toString(36).substring(2, 6).toUpperCase();
+            return `${part()}-${part()}-${part()}`;
+        }
+        
+        function formatExpirationDate(isoString) {
+            const date = new Date(isoString);
+            const now = new Date();
+            if (isNaN(date.getTime())) return "Data Inválida";
+            
+            const isExpired = date < now;
+            
+            const formatted = date.toLocaleString('pt-BR', {
+                year: 'numeric',
+                month: 'numeric',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+            
+            if (isExpired) return `Expirada em: ${formatted}`;
+            
+            // Calcula o tempo restante
+            const diffMs = date.getTime() - now.getTime();
+            const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+            const diffHours = Math.floor((diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            
+            let remaining = "";
+            if (diffDays > 0) remaining += `${diffDays}d `;
+            remaining += `${diffHours}h`;
+            
+            return `Válida por: ${remaining} (Expira em: ${formatted})`;
+        }
+
+        function updateKeyListDisplay() {
+            const list = document.getElementById('keyList');
+            if (!list) return;
+            
+            // Ordena as chaves: Expiradas por último, depois por data de expiração
+            const sortedKeys = VALID_KEYS.sort((a, b) => {
+                const isAExpired = new Date(a.expires) < new Date();
+                const isBExpired = new Date(b.expires) < new Date();
+                
+                if (isAExpired !== isBExpired) {
+                    return isAExpired ? 1 : -1; // Coloca expiradas no final
+                }
+                return new Date(a.expires) - new Date(b.expires); // Ordena pela data
+            });
+
+
+            list.innerHTML = sortedKeys.map((keyObj, index) => {
+                const isExpired = new Date(keyObj.expires) < new Date();
+                const statusClass = isExpired ? 'expired' : 'valid';
+                const displayText = formatExpirationDate(keyObj.expires);
+                
+                // Encontra o índice original para o botão de deletar
+                const originalIndex = VALID_KEYS.findIndex(k => k.key === keyObj.key);
+                
+                return `<div class="key-item ${statusClass}">
+                    <div class="key-info">
+                        <span>${keyObj.key}</span>
+                        <button class="delete-btn" data-index="${originalIndex}">X</button>
+                    </div>
+                    <small>${displayText}</small>
+                </div>`;
+            }).join('');
+
+            list.querySelectorAll('.delete-btn').forEach(button => {
+                button.addEventListener('click', handleDeleteKey);
+            });
+
+            if (VALID_KEYS.length === 0) {
+                 list.innerHTML = `<div class="key-item info">Nenhuma chave válida salva.</div>`;
+            }
+        }
+        
+        // --- ADMIN FUNÇÕES ---
+
+        function handleDeleteKey(event) {
+            const indexToDelete = parseInt(event.target.dataset.index);
+            
+            if (confirm(`Tem certeza que deseja DELETAR a chave ${VALID_KEYS[indexToDelete].key}?`)) {
+                VALID_KEYS.splice(indexToDelete, 1);
+                saveKeys();
+            }
+        }
+        
+        function handleGenerateKey() {
+            const durationValue = parseInt(document.getElementById('durationValue').value);
+            const durationUnit = document.getElementById('durationUnit').value;
+            
+            if (isNaN(durationValue) || durationValue <= 0) {
+                 alert("Por favor, insira uma duração válida (número maior que zero).");
+                 return;
+            }
+            
+            let ms = 0;
+            if (durationUnit === 'days') {
+                ms = durationValue * 24 * 60 * 60 * 1000;
+            } else if (durationUnit === 'hours') {
+                ms = durationValue * 60 * 60 * 1000;
+            }
+            
+            const expirationTime = new Date(Date.now() + ms).toISOString();
+            const newKey = generateUniqueKey();
+            
+            const newKeyObject = {
+                key: newKey,
+                expires: expirationTime
+            };
+            
+            VALID_KEYS.push(newKeyObject);
+            saveKeys(); 
+            
+            alert(`Nova chave gerada: ${newKey}\nExpira em: ${formatExpirationDate(expirationTime).replace(/.*(Expira em: )/, '$1')}`);
+        }
+        
+        function handleAdminLogin(event) {
+            event.preventDefault();
+            const masterKeyInput = document.getElementById('masterKey').value.trim().toUpperCase();
+            
+            if (masterKeyInput === MASTER_KEY) {
+                document.getElementById('loginAdminContainer').style.display = 'none';
+                document.getElementById('adminDashboard').style.display = 'block';
+                updateKeyListDisplay();
+            } else {
+                setMessage('Erro: Chave mestra incorreta.', 'error');
+            }
+        }
+        
+        function handleAdminLogout() {
+            document.getElementById('adminDashboard').style.display = 'none';
+            document.getElementById('loginAdminContainer').style.display = 'block';
+            document.getElementById('masterKey').value = '';
+            setMessage('Acesso Admin deslogado.', 'info');
+        }
+
+        // --- INICIALIZAÇÃO ---
+        
+        loadKeys();
+        
+        document.getElementById('adminLoginForm').addEventListener('submit', handleAdminLogin);
+        document.getElementById('generateKeyBtn').addEventListener('click', handleGenerateKey);
+        document.getElementById('logoutAdminBtn').addEventListener('click', handleAdminLogout);
+        
+        setMessage('Insira a chave mestra para acessar a administração.', 'info');
+    </script>
+</body>
+</html>

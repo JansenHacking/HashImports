@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acesso por Serial Key</title>
+    
+    <style>
+        /* CSS re-utilizado */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #1f2125;
+            color: #e0e6eb;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            flex-direction: column;
+        }
+        .container {
+            background-color: #2a2d32;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            width: 350px;
+            max-width: 90%;
+            text-align: center;
+            border: 1px solid #444851;
+        }
+        h2 {
+            color: #42a5f5;
+            margin-bottom: 25px;
+            font-weight: 700;
+        }
+        .input-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #444851;
+            border-radius: 8px;
+            box-sizing: border-box;
+            background-color: #3c4046;
+            color: #e0e6eb;
+            font-size: 16px;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            margin-top: 10px;
+            border: none;
+            border-radius: 8px;
+            background-color: #42a5f5;
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        button:hover {
+            background-color: #3385cc;
+        }
+        #message {
+            margin-top: 20px;
+            font-weight: 500;
+        }
+        .success { color: #4caf50; }
+        .error { color: #ef5350; }
+        .info { color: #42a5f5; }
+        
+        .admin-link {
+            font-size: 0.85em;
+            margin-top: 20px;
+        }
+        .admin-link a {
+            color: #00c0aa;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    
+
+    <div class="container" id="loginContainer">
+        <h2>Acesso por Serial Key</h2>
+        <form id="loginForm">
+            <div class="input-group">
+                <label for="serialKey">Chave de Acesso:</label>
+                <input type="text" id="serialKey" required placeholder="Insira sua chave aqui">
+            </div>
+            <button type="submit">Acessar Calculadora</button>
+        </form>
+        <p id="message"></p>
+    </div>
+    
+    <div class="admin-link">
+        <a href="admin.html">Acesso Administrativo</a>
+    </div>
+
+    <script>
+        // **********************************************************
+        //  CONFIGURAÇÃO PRINCIPAL: ALVO DE REDIRECIONAMENTO
+        // **********************************************************
+       const TARGET_URL = "/index.html"; // Tenta usar o caminho absoluto 
+        // **********************************************************
+
+        // --- CHAVES E CONFIGURAÇÃO INICIAL ---
+        const SESSION_KEY_LOCK = "serialKeyLock";
+        const SESSION_ACTIVE_USER = "serialKeyActive";
+        const LOCAL_STORAGE_KEYS = "validSerialKeys";
+
+        let VALID_KEYS = []; // Agora armazena objetos: { key: "...", expires: "..." }
+        
+        // --- FUNÇÕES DE UTILIDADE ---
+
+        function loadKeys() {
+            const storedKeys = localStorage.getItem(LOCAL_STORAGE_KEYS);
+            if (storedKeys) {
+                // Filtra para garantir que só objetos válidos sejam considerados
+                VALID_KEYS = JSON.parse(storedKeys).filter(k => k.key && k.expires);
+            }
+            // Se não houver chaves válidas salvas, VALID_KEYS será []
+        }
+        
+        function setMessage(text, type) {
+            const messageElement = document.getElementById('message');
+            messageElement.textContent = text;
+            messageElement.className = '';
+            messageElement.classList.add(type);
+        }
+
+        // --- FUNÇÃO PRINCIPAL DE ACESSO ---
+
+        function handleLogin(event) {
+           // --- FUNÇÃO PRINCIPAL DE ACESSO (CORRIGIDA) ---
+
+        function handleLogin(event) {
+            event.preventDefault();
+
+            const serialKey = document.getElementById('serialKey').value.trim().toUpperCase();
+            setMessage('Verificando chave...', 'info');
+            
+            const keyObject = VALID_KEYS.find(k => k.key === serialKey);
+
+            // 1. Verifica se a chave existe
+            if (!keyObject) {
+                setMessage('Erro: Chave de acesso inválida.', 'error');
+                return;
+            }
+            
+            // 2. Verifica a validade (expiração)
+            const expirationDate = new Date(keyObject.expires);
+            const currentDate = new Date();
+            
+            if (currentDate > expirationDate) {
+                const expiredDate = expirationDate.toLocaleString('pt-BR');
+                setMessage(`Erro: Sua chave expirou em ${expiredDate}.`, 'error');
+                return;
+            }
+
+            // 3. Verifica uso simultâneo (lock)
+            const globalLock = localStorage.getItem(SESSION_KEY_LOCK);
+            
+            if (globalLock === serialKey) {
+                setMessage('Erro: Esta chave já está sendo utilizada por outro usuário.', 'error');
+                return;
+            }
+            
+            // 4. Bloqueia e Redireciona
+            try {
+                // Tenta salvar as informações de sessão
+                localStorage.setItem(SESSION_KEY_LOCK, serialKey); 
+                sessionStorage.setItem(SESSION_ACTIVE_USER, serialKey); 
+                sessionStorage.setItem('keyExpiresAt', keyObject.expires); 
+
+                setMessage('Login bem-sucedido! Redirecionando para a calculadora...', 'success');
+                
+                setTimeout(() => {
+                    window.location.href = TARGET_URL;
+                }, 1000); 
+                
+            } catch (e) {
+                // *** BLOCO CATCH COMPLETO E FUNCIONAL ***
+                // Este bloco trata erros ao tentar usar o localStorage (ex: Navegador em modo privado)
+                setMessage('Erro: Falha ao bloquear a chave localmente. Tente limpar o cache do navegador.', 'error');
+                localStorage.removeItem(SESSION_KEY_LOCK);
+            }
+        }
+        }
+        
+        // --- INICIALIZAÇÃO ---
+        loadKeys();
+        document.getElementById('loginForm').addEventListener('submit', handleLogin);
+        setMessage('Insira a chave de acesso para continuar.', 'info');
+        
+    </script>
+</body>
+</html>
